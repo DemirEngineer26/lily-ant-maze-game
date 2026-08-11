@@ -8,9 +8,9 @@ typedef struct {
     int col;
 } Position;
 
-//Maze struture, featuring a 50x50 grid 
+//Maze structure, featuring a 50x50 grid 
 typedef struct {
-    char grid[50][50];
+    char **grid;
     int rows; 
     int cols;
     Position lily_pos;
@@ -18,10 +18,10 @@ typedef struct {
 } Maze;
 
 //function prototypes
-int maze_load(Maze, *maze, const char *filename);
+int maze_load(Maze *maze, const char *filename);
 void maze_print(const Maze *maze);
 int maze_can_move(const Maze *maze, int row, int col);
 int maze_move_lily(Maze *maze, char direction);
-int maze_college_point(Maze *maze);
+int maze_collect_point(Maze *maze);
 
 #endif //MAZE_H
