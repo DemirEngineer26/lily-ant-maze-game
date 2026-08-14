@@ -124,6 +124,7 @@ int maze_bfs_hint(const Maze *maze, char *out_direction) {
     int cols = maze->cols;
     int visited[50][50] = {0};
     char first_move[50][50];
+    Position parent[50][50];
 
     Queue q;
     queue_init(&q); //use queue ADT
@@ -144,7 +145,7 @@ int maze_bfs_hint(const Maze *maze, char *out_direction) {
         Position cur;
         queue_dequeue(&q, &cur);
 
-        if(maze->grid[cur.row][cur.col] == '*' && 
+        if((maze->grid[cur.row][cur.col] == '*' || maze->grid[cur.row][cur.col] == 'E') && 
         !(cur.row == start.row && cur.col == start.col)) {
             found = cur;
             foundFlag = 1;
@@ -165,6 +166,7 @@ int maze_bfs_hint(const Maze *maze, char *out_direction) {
                 continue;
             }
             visited[nr][nc] = 1;
+            parent[nr][nc] = cur;
             //start neighbors define the first move
             if (cur.row == start.row && cur.col == start.col) {
                 first_move[nr][nc] = dch[i];
@@ -178,6 +180,15 @@ int maze_bfs_hint(const Maze *maze, char *out_direction) {
        //return the minimum steps to 'E' or -1 if blocked
     if(!foundFlag) return 0;
     *out_direction = first_move[found.row][found.col];
+    //extra credit: draw complete bfs shorted path on grid
+    Position curr_path = parent[found.row][found.col];
+    while (!(curr_path.row == start.row && curr_path.col == start.col)) {
+        // Mark path tiles with '+' (skip start/end tiles)
+        if (maze->grid[curr_path.row][curr_path.col] == '.') {
+            maze->grid[curr_path.row][curr_path.col] = '+';
+        }
+        curr_path = parent[curr_path.row][curr_path.col];
+    }
     return 1; 
 }
 
