@@ -5,36 +5,40 @@
 int maze_load(Maze *maze, const char *filename) {
     FILE *file = fopen(filename, "r");
     if (file == NULL) {
-        printf("Error: could not open file %s\n", filename);
-        return 0;
+        printf("Error: Could not open file %s\n", filename);
+        return 0; // Returns 0 so main prints error message
     }
 
-    //read maze file into maze grid row by row using malloc
-    //locate initial positions, points, walls, etc
+    // 1. Read dimensions (rows, cols) from the top of the txt file
     if (fscanf(file, "%d %d", &maze->rows, &maze->cols) != 2) {
         fclose(file);
         return 0;
     }
 
+    // 2. Allocate rows array
     maze->grid = malloc(maze->rows * sizeof(char *));
     if (maze->grid == NULL) {
         fclose(file);
         return 0;
     }
+
+    // 3. Allocate columns and read chars into the grid
     for (int i = 0; i < maze->rows; i++) {
-        maze->grid = malloc((maze->cols + 1) * sizeof(char));
+        maze->grid[i] = malloc((maze->cols + 1) * sizeof(char));
         for (int j = 0; j < maze->cols; j++) {
             fscanf(file, " %c", &maze->grid[i][j]);
 
+            // Track Lily's starting spot
             if (maze->grid[i][j] == 'L') {
                 maze->lily_pos.row = i;
                 maze->lily_pos.col = j;
             }
         }
     }
+
     maze->score = 0;
     fclose(file);
-    return 1;
+    return 1; // Success!
 }
 
 void maze_print(const Maze *maze) {
