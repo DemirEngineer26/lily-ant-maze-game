@@ -1,6 +1,6 @@
 #include "stack.h"
 
-void stact_init(Stack *stack) {
+void stack_init(Stack *stack) {
     //TODO. initialize with stack being the pointer and top being the struct
     //top being set to -1 means there are no variables yet
     stack->top = -1;
