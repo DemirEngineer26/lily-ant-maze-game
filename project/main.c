@@ -4,17 +4,18 @@
 #include "stack.h"
 #include "queue.h"
 
-int main (void) {
+int main (int argc, char *argv[]) {
     Maze maze; 
     Stack undo_stack;
-    char choice;
-    int running = 1;
-    //initialize unto stack
-    stack_init(&undo_stack);
+    
+    // Default to "maze.txt" if no filename was typed in terminal
+    const char *filename = "maze.txt";
+    if (argc > 1) {
+        filename = argv[1]; // Use the file passed in terminal
+    }
 
-    //load maze
-    if (!maze_load(&maze, "maze.txt")) {
-        printf("Error: could not load maze file.\n");
+    if (!maze_load(&maze, filename)) {
+        printf("Error: Could not load maze file '%s'.\n", filename);
         return 1;
     }
 
