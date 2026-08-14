@@ -118,7 +118,7 @@ int maze_collect_point(Maze *maze) {
     return 0;
 }
 
-int maze_bfs_hint(const Maze *maze, char *out_direction) {
+int maze_bfs_hint(Maze *maze, char *out_direction) {
     if (maze == NULL || out_direction == NULL) return 0;
     int rows = maze->rows;
     int cols = maze->cols;
