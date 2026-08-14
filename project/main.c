@@ -7,12 +7,14 @@
 int main (int argc, char *argv[]) {
     Maze maze; 
     Stack undo_stack;
-    
-    // Default to "maze.txt" if no filename was typed in terminal
-    const char *filename = "maze.txt";
-    if (argc > 1) {
-        filename = argv[1]; // Use the file passed in terminal
-    }
+    int running = 1;
+    char choice;
+
+    // Initialize stack
+    stack_init(&undo_stack);
+
+    // Get filename or use default
+    const char *filename = (argc > 1) ? argv[1] : "maze.txt";
 
     if (!maze_load(&maze, filename)) {
         printf("Error: Could not load maze file '%s'.\n", filename);
