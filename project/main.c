@@ -31,7 +31,7 @@ int main (int argc, char *argv[]) {
         printf("Enter command: ");
         scanf(" %c", &choice);
 
-        switch (choice) {
+        switch (toupper(choice)) {
             case 'W':
             case 'A':
             case 'S':
