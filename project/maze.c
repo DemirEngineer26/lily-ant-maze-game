@@ -48,19 +48,18 @@ void maze_print(const Maze *maze) {
 }
 
 int maze_can_move(const Maze *maze, int row, int col) {
-    //check if (row, col) is within bounds rather than a wall '#'
-    for (int i = 0; i < row; i++) {
-        for (int j = 0; j < col; j++) {
-            if (maze->grid[i][j] == '#') {
-                printf("Error! Out of bounds!");
-                return 0;
-            } else {          
-                printf("within bounds");
-                return 1;
-            }
-        }
+    // 1. Check if the target position is OUT OF BOUNDS[cite: 1]
+    if (row < 0 || row >= maze->rows || col < 0 || col >= maze->cols) {
+        return 0; // Invalid step (outside the array boundaries)[cite: 1]
     }
-    return 0;
+
+    // 2. Check if the target position is a WALL[cite: 1]
+    if (maze->grid[row][col] == '#') {
+        return 0; // Invalid step (hit a wall)[cite: 1]
+    }
+
+    // 3. Otherwise, it is a valid walkable cell ('.', '*', 'E', etc.)[cite: 1]
+    return 1;
 }
 
 int maze_move_lily(Maze *maze, char direction) {
