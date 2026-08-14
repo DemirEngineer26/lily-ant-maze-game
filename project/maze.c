@@ -60,7 +60,7 @@ int maze_can_move(const Maze *maze, int row, int col) {
             }
         }
     }
-    //return 0;
+    return 0;
 }
 
 int maze_move_lily(Maze *maze, char direction) {
