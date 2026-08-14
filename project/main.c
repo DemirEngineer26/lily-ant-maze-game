@@ -13,9 +13,23 @@ int main (int argc, char *argv[]) {
     // Initialize stack
     stack_init(&undo_stack);
 
-    // Get filename or use default
-    const char *filename = (argc > 1) ? argv[1] : "maze.txt";
-
+    // Select a maze file from a menu
+    const char *filename = "maze_normal.txt"; // Default
+    int menu_choice;
+    //extra credit: multiple files
+    printf("--- SELECT A MAZE ---\n");
+    printf("1. Normal Maze (maze_normal.txt)\n");
+    printf("2. Blocked Maze (maze_blocked.txt)\n");
+    printf("3. Large Maze (maze_10x20.txt)\n");
+    printf("Select option (1-3): ");
+    
+    if (scanf("%d", &menu_choice) == 1) {
+        if (menu_choice == 2) {
+            filename = "maze_blocked.txt";
+        } else if (menu_choice == 3) {
+            filename = "maze_10x20.txt";
+        }
+    }
     if (!maze_load(&maze, filename)) {
         printf("Error: Could not load maze file '%s'.\n", filename);
         return 1;
@@ -81,7 +95,28 @@ int main (int argc, char *argv[]) {
     }
 
     printf("\nGame Over! Final Score: %d\n", maze.score);
+    // --- EXTRA CREDIT: HIGH SCORE SAVE/LOAD ---
+    int high_score = 0;
+    
+    // 1. Try to load the existing high score
+    FILE *f_read = fopen("highscore.txt", "r");
+    if (f_read != NULL) {
+        fscanf(f_read, "%d", &high_score);
+        fclose(f_read);
+    }
 
+    // 2. Compare and save if the player beat it
+    if (maze.score > high_score) {
+        high_score = maze.score;
+        FILE *f_write = fopen("highscore.txt", "w");
+        if (f_write != NULL) {
+            fprintf(f_write, "%d", high_score);
+            fclose(f_write);
+        }
+        printf("🏆 NEW HIGH SCORE: %d! 🏆\n", high_score);
+    } else {
+        printf("Highest Score to beat: %d\n", high_score);
+    }
     //clean up dynamically allocated memory
     maze_free(&maze);
 
