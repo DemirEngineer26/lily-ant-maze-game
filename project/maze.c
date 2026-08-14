@@ -28,7 +28,7 @@ int maze_load(Maze *maze, const char *filename) {
 
             if (maze->grid[i][j] == 'L') {
                 maze->lily_pos.row = i;
-                maze->lily_pos-col = j;
+                maze->lily_pos.col = j;
             }
         }
     }
@@ -37,7 +37,7 @@ int maze_load(Maze *maze, const char *filename) {
     return 1;
 }
 
-void maze_print(const Name *maze) {
+void maze_print(const Maze *maze) {
     //loop through maze grid and print each character to stdout
     for (int i = 0; i < maze->rows; i++) {
         for (int j = 0; j < maze->cols; j++) {
