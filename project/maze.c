@@ -85,14 +85,19 @@ int maze_move_lily(Maze *maze, char direction) {
     }
 
     if (maze_can_move(maze, target_row, target_col)) {
-        //clear lily's old position on the grid
+        // Collect point automatically if stepping on a point tile
+        if (maze->grid[target_row][target_col] == '*') {
+            maze->score += 1;
+        }
+
+        // Clear old spot
         maze->grid[maze->lily_pos.row][maze->lily_pos.col] = '.';
 
-        //update lily's stored position
+        // Update Lily's position
         maze->lily_pos.row = target_row;
         maze->lily_pos.col = target_col;
 
-        //draw lily at her new spot on the grid
+        // Draw Lily
         maze->grid[target_row][target_col] = 'L';
 
         return 1;
