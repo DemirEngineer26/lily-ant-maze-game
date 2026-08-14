@@ -10,6 +10,7 @@ typedef struct {
     Position items[MAX_QUEUE_SIZE];
     int front;
     int rear;
+    int size;
 } Queue;
 
 void queue_init(Queue *queue);
