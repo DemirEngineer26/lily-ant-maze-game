@@ -23,5 +23,6 @@ void maze_print(const Maze *maze);
 int maze_can_move(const Maze *maze, int row, int col);
 int maze_move_lily(Maze *maze, char direction);
 int maze_collect_point(Maze *maze);
-
+int maze_bfs_hint(const Maze *maze, char *out_direction);
+void maze_free(Maze *maze);
 #endif //MAZE_H
