@@ -48,7 +48,7 @@ int main (void) {
                 Position prev_pos;
                 if (stack_pop(&undo_stack, &prev_pos)) {
                     //restore lilys position
-                    maze.grid[maze.lily_pos.row][maze.lily_pos.col] = ' ';
+                    maze.grid[maze.lily_pos.row][maze.lily_pos.col] = '.';
                     maze.lily_pos = prev_pos;
                     maze.grid[prev_pos.row][prev_pos.col] = 'L';
                     printf("Undid last move!\n");
@@ -60,6 +60,12 @@ int main (void) {
             case 'H':
                 printf("Hint feature requested (BFS search)\n");
                 //call BFS queue hint logic here
+                char hint;
+                if (maze_bfs_hint(&maze, & hint)) {
+                    printf("Hint: try moving '%c'\n", hint);
+                } else {
+                    printf("No reachable points left to collect.\n");
+                }
                 break;
             case 'Q':
                 running = 0;
