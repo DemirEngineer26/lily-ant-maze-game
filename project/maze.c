@@ -1,53 +1,49 @@
 #include <sdtio.h>
 #include <stdlib.h> 
 #include "maze.h"
-
+#include "queue.h"
 int maze_load(Maze *maze, const char *filename) {
     FILE *file = fopen(filename, "r");
     if (file == NULL) {
+        printf("Error: could not open file %s\n", filename);
         return 0;
     }
 
     //read maze file into maze grid row by row using malloc
     //locate initial positions, points, walls, etc
-    int num_rows;
-    scanf("%d", n);
-    char **grid = malloc(sizeof(char *) * num_rows);//interchangeable with char **grid = malloc(sizeof(*grid) * num_rows);
-    if (grid == NULL) {
-        return NULL;
+    if (fscanf(file, "%d %d", &maze->rows, &maze->cols) != 2) {
+        fclose(file);
+        return 0;
     }
-    int rows = 0;
-    int cols = 0;
-    int max_cols = 0;
-    int ch;
-    while ((ch == fgetc(file)) != EOF) {
-        if (ch == '\n') {
-            rows++;
-        }
-        if (cols > max_cols) max_cols = cols;
-        cols = 0;
-    } else {
-        cols++;
-    }
-    if (cols > 0) {
-        rows++;
-        if (cols > max_cols) max_cols = cols;
-    }
-    maze->rows = rows;
-    maze->cols = max_cols;
-    //free(grid);
 
+    maze->grid = malloc(maze->rows * sizeof(char *));
+    if (maze->grid == NULL) {
+        fclose(file);
+        return 0;
+    }
+    for (int i = 0; i < maze->rows; i++) {
+        maze->grid = malloc((maze->cols + 1) * sizeof(char));
+        for (int j = 0; j < maze->cols; j++) {
+            fscanf(file, " %c", &maze->grid[i][j]);
+
+            if (maze->grid[i][j] == 'L') {
+                maze->lily_pos.row = i;
+                maze->lily_pos-col = j;
+            }
+        }
+    }
+    maze->score = 0;
     fclose(file);
-    fopen(filename, "r");
     return 1;
 }
 
 void maze_print(const Name *maze) {
     //loop through maze grid and print each character to stdout
-    for (int i = 0; i < (*maze.rows); i++) {
-        for (int j = 0; j < (*maze.cols); j++) {
-            printf("%c", (*maze.grid[i][j]));
+    for (int i = 0; i < maze->rows; i++) {
+        for (int j = 0; j < maze->cols; j++) {
+            printf("%c ", maze->grid[i][j]);
         }
+        printf("\n");
     }
 }
 
@@ -55,7 +51,7 @@ int maze_can_move(const Maze *maze, int row, int col) {
     //check if (row, col) is within bounds rather than a wall '#'
     for (int i = 0; i < row; i++) {
         for (int j = 0; j < col; j++) {
-            if (*maze.grid[i][j] == '#') {
+            if (maze->grid[i][j] == '#') {
                 printf("Error! Out of bounds!");
                 return 0;
             } else {          
@@ -72,7 +68,7 @@ int maze_move_lily(Maze *maze, char direction) {
     //W is for up, A is for left, S is for down, D is for right
 
     int target_row = maze->lily_pos.row;
-    int target_col = maze->lily_pos.col
+    int target_col = maze->lily_pos.col;
     if (direction == 'W' || direction == 'w') {
         target_row--;
     } else if (direction == 'A' || direction == 'a') {
@@ -87,7 +83,7 @@ int maze_move_lily(Maze *maze, char direction) {
 
     if (maze_can_move(maze, target_row, target_col)) {
         //clear lily's old position on the grid
-        maze->grid[maze->lily_pos.row][maze->lily_pos.col] = ' ';
+        maze->grid[maze->lily_pos.row][maze->lily_pos.col] = '.';
 
         //update lily's stored position
         maze->lily_pos.row = target_row;
@@ -108,9 +104,86 @@ int maze_collect_point(Maze *maze) {
     int target_col = maze->lily_pos.col;
     if (maze->grid[target_row][target_col] == '*') {
         maze->score += 1;
-        maze->grid[target_row][target_col] = ' ';//check if correct 
+        maze->grid[target_row][target_col] = '.';//check if correct 
         return 1;
     }
     return 0;
 }
 
+int maze_bfs_hint(const Maze *maze, char *out_direction) {
+    if (maze == NULL || out_direction == NULL) return 0;
+    int rows = maze->rows;
+    int cols = maze.cols;
+    int visited[50][50] = {0};
+    char first_move[50][50];
+
+    Queue q;
+    queue_init(&q); //use queue ADT
+    //run BFS algorithm using queue_enqueue and queue_dequeue
+    //use maze->rows and maze->cols
+    Position start = maze->lily_pos;
+    visited[start.row][start.col] = 1;
+    queue_enqueue(&q, start);
+
+    int dr[4] = {-1, 0, 1, 0};
+    int dc[4] = {0, -1, 0, 1};
+    char dch[4] = {'W', 'A', 'S', 'D'};
+
+    Position found;
+    int foundFlag = 0;
+    
+    while (!queue_is_empty(&q)) {
+        Position cur;
+        queue_dequeue(&q, &cur);
+
+        if(maze->grid[cur.row][cur.col] == '*' && 
+        !(cur.row == start.row && cur.col == start.col)) {
+            found = cur;
+            foundFlag = 1;
+            break;
+        }
+
+        for (int i = 0; i < 4; i++) {
+            int nr = curr.row + dr[i];
+            int nc = cur.col + dc[i];
+
+            if (nr < 0 || nr >= row || nc < 0 || nc >= cols) {
+                continue;
+            }
+            if (visited[nr][nc]) {
+                continue;
+            }
+            if (maze->grid[nr][nc] == '#') {
+                continue;
+            }
+            visited[nr][nc] = 1;
+            //start neighbors define the first move
+            if (cur.row == start.row && cur.col == start.col) {
+                first_move[nr][nc] = dch[i];
+            } else {
+                first_move[nr][nc] = first_move[cur.row][cur.col];
+
+                Position next = {nr, nc};
+                queue_enqueue(&q, next);
+            }
+        }
+        if(!foundFlag) return 0;
+        *out_direction = first_move[found.row][found.col];
+        return 1;
+    }
+       //return the minimum steps to 'E' or -1 if blocked
+    
+}
+
+void maze_free(Maze *maze) {
+    if (maze->grid == NULL) {
+        return;
+    }
+
+    for (int i = 0; i < maze->rows; i++) {
+        free(maze->grid[i]);
+    }
+
+    free(maze->grid);
+    maze->grid = NULL;
+}
