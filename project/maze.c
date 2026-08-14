@@ -113,7 +113,7 @@ int maze_collect_point(Maze *maze) {
 int maze_bfs_hint(const Maze *maze, char *out_direction) {
     if (maze == NULL || out_direction == NULL) return 0;
     int rows = maze->rows;
-    int cols = maze.cols;
+    int cols = maze->cols;
     int visited[50][50] = {0};
     char first_move[50][50];
 
@@ -144,10 +144,10 @@ int maze_bfs_hint(const Maze *maze, char *out_direction) {
         }
 
         for (int i = 0; i < 4; i++) {
-            int nr = curr.row + dr[i];
+            int nr = cur.row + dr[i];
             int nc = cur.col + dc[i];
 
-            if (nr < 0 || nr >= row || nc < 0 || nc >= cols) {
+            if (nr < 0 || nr >= rows || nc < 0 || nc >= cols) {
                 continue;
             }
             if (visited[nr][nc]) {
@@ -162,17 +162,15 @@ int maze_bfs_hint(const Maze *maze, char *out_direction) {
                 first_move[nr][nc] = dch[i];
             } else {
                 first_move[nr][nc] = first_move[cur.row][cur.col];
-
-                Position next = {nr, nc};
-                queue_enqueue(&q, next);
             }
-        }
-        if(!foundFlag) return 0;
-        *out_direction = first_move[found.row][found.col];
-        return 1;
+            Position next = {nr, nc};
+            queue_enqueue(&q, next);
+        }      
     }
        //return the minimum steps to 'E' or -1 if blocked
-    
+    if(!foundFlag) return 0;
+    *out_direction = first_move[found.row][found.col];
+    return 1; 
 }
 
 void maze_free(Maze *maze) {
